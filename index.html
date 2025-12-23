@@ -1375,9 +1375,7 @@ window.addEventListener("load", updateNotificationBadge);
         
         
 
-        function deleteMission() {
-            const li = window.missionBeingEdited;
-      function checkMissedDeadlines() {
+        function checkMissedDeadlines() {
     const missions = document.querySelectorAll("#mission-list li");
     const now = new Date().getTime();
 
@@ -1391,7 +1389,7 @@ window.addEventListener("load", updateNotificationBadge);
 
         const timeLeft = deadlineTime - now;
 
-        // 🔔 Mission: Deadline Approaching (2 hours)
+        // 🔔 Mission approaching
         if (timeLeft > 0 && timeLeft <= 2 * 60 * 60 * 1000 && !li.dataset.warned) {
             li.dataset.warned = "true";
             pushNotification(
@@ -1400,14 +1398,12 @@ window.addEventListener("load", updateNotificationBadge);
             );
         }
 
-        // 🔴 OVERDUE
+        // 🔴 Overdue
         if (now > deadlineTime) {
             overdueSpan.innerHTML = `<span class="overdue-badge">Overdue</span>`;
-
             if (!li.dataset.deducted) {
                 completedMissions = Math.max(0, completedMissions - 1);
                 li.dataset.deducted = "true";
-
                 document.getElementById("missionCounter").textContent = completedMissions;
                 saveData();
             }
@@ -1415,13 +1411,23 @@ window.addEventListener("load", updateNotificationBadge);
             overdueSpan.innerHTML = "";
         }
     });
-      }      if (!li) return;
-
-            li.remove();
-            saveData();
-            closeModal();
         }
+function deleteMission() {
+    const li = window.missionBeingEdited;
+    if (!li) return;
 
+    const title = li.querySelector(".mission-text").textContent;
+
+    li.classList.add("remove");
+
+    setTimeout(() => {
+        li.remove();
+        saveData();
+        pushNotification("Mission Deleted", `"${title}" has been removed`);
+    }, 400);
+
+    closeModal();
+}
 
         function completeMission(btn) {
             const li = btn.parentElement;
@@ -1558,20 +1564,23 @@ window.addEventListener("load", updateNotificationBadge);
                 }
 
                 div.innerHTML = `
-       <div class="goal-header">
+  <div class="goal-header">
     <span class="goal-title">${goal}</span>
     <span class="goal-priority ${priority}">-<strong> ${priority}</strong></span>
   </div>
 
   <div class="goal-subrow">
     <span class="goal-deadline">${formattedDeadline}</span>
+
+    <!-- REQUIRED FOR NOTIFICATIONS -->
     <span class="goal-timer"></span>
     <span class="goal-overdue"></span>
-    <button class="remove-btn" onclick="removeGoal(this)">Remove</button>
+
+    <button class="remove-btn" onclick="removeGoal(this)" style="margin: 0px 30px 0px 0px">
+      Remove
+    </button>
   </div>
-
-
-    `;
+`;
 
                 document.getElementById("goal-list").appendChild(div);
                 saveData();
@@ -1895,6 +1904,7 @@ document.querySelectorAll("#mission-list li").forEach(li => {
 </body>
 
 </html>
+
 
 
 
