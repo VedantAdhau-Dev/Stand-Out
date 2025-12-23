@@ -1216,7 +1216,7 @@ if ("serviceWorker" in navigator) {
         delete li.dataset.deadline;
     }
 
-    // Reset overdue state for updated mission
+    // Reset overdue state on update
     li.querySelector(".overdueMark").innerHTML = "";
     delete li.dataset.deducted;
 
@@ -1253,20 +1253,7 @@ if ("serviceWorker" in navigator) {
             overdueSpan.innerHTML = "";
         }
     });
-            }igit", minute: "2-digit" });
-
-                li.querySelector(".deadlineDisplay").textContent = `${dateString}, ${timeString}`;
-            } else {
-                li.querySelector(".deadlineDisplay").textContent = "";
-            }
-
-            // REMOVE overdue badge when mission is updated
-            li.querySelector(".overdueMark").innerHTML = "";
-
-            // REMOVE deducted flag so new deadline can deduct again if late
-            delete li.dataset.deducted;
-
-            saveData();
+            
             closeModal();
         }
 
@@ -1732,6 +1719,7 @@ document.querySelectorAll("#mission-list li").forEach(li => {
 </body>
 
 </html>
+
 
 
 
