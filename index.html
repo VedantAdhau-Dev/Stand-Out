@@ -1188,32 +1188,7 @@ if ("serviceWorker" in navigator) {
             closeModal();
         }
 
-        function checkMissedDeadlines() {
-            const missions = document.querySelectorAll("#mission-list li");
-            const now = new Date().getTime();
-
-            missions.forEach(li => {
-                const deadline = li.dataset.deadline;
-                if (!deadline) return;
-
-                const deadlineTime = new Date(deadline).getTime();
-
-                // If overdue
-                if (now > deadlineTime) {
-                    // Add badge
-                    const mark = li.querySelector(".overdueMark");
-                    mark.innerHTML = `<span class="overdue-badge">Overdue</span>`;
-
-                    // Deduct point ONLY once
-                    if (!li.dataset.deducted) {
-                        completedMissions = Math.max(0, completedMissions - 1);
-                        li.dataset.deducted = "true"; // prevent future deductions
-                        document.getElementById("missionCounter").textContent = completedMissions;
-                        saveData();
-                    }
-                }
-            });
-        }
+        
 
 
         setInterval(checkMissedDeadlines, 60000); // check every 1 minute
@@ -1232,7 +1207,65 @@ if ("serviceWorker" in navigator) {
             if (newDeadline) {
                 const d = new Date(newDeadline);
                 const dateString = d.toLocaleDateString([], { day: "numeric", month: "short" });
-                const timeString = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                const timeString = d.toLocaleTimeString([], { hour: "2-dfunction checkMissedDeadlines() {
+    const missions = document.querySelectorAll("#mission-list li");
+    const now = new Date().getTime();
+
+    missions.forEach(li => {
+        const deadline = li.dataset.deadline;
+        if (!deadline) return;
+
+        const deadlineTime = new Date(deadline).getTime();
+
+        const overdueSpan = li.querySelector(".overdueMark");
+        if (!overdueSpan) return; // safety
+
+        // Overdue?
+        if (now > deadlineTime) {
+            overdueSpan.innerHTML = `<span class="overdue-badge">Overdue</span>`;
+
+            if (!li.dataset.deducted) {
+                completedMissions = Math.max(0, completedMissions - 1);
+                li.dataset.deducted = "true";
+                li.setAttribute("data-deducted", "true");
+
+                document.getElementById("missionCounter").textContent = completedMissions;
+                saveData();
+            }
+        } else {
+            overdueSpan.innerHTML = "";
+        }
+    });
+            }function checkMissedDeadlines() {
+    const missions = document.querySelectorAll("#mission-list li");
+    const now = new Date().getTime();
+
+    missions.forEach(li => {
+        const deadline = li.dataset.deadline;
+        if (!deadline) return;
+
+        const deadlineTime = new Date(deadline).getTime();
+
+        const overdueSpan = li.querySelector(".overdueMark");
+        if (!overdueSpan) return; // safety
+
+        // Overdue?
+        if (now > deadlineTime) {
+            overdueSpan.innerHTML = `<span class="overdue-badge">Overdue</span>`;
+
+            if (!li.dataset.deducted) {
+                completedMissions = Math.max(0, completedMissions - 1);
+                li.dataset.deducted = "true";
+                li.setAttribute("data-deducted", "true");
+
+                document.getElementById("missionCounter").textContent = completedMissions;
+                saveData();
+            }
+        } else {
+            overdueSpan.innerHTML = "";
+        }
+    });
+            }igit", minute: "2-digit" });
 
                 li.querySelector(".deadlineDisplay").textContent = `${dateString}, ${timeString}`;
             } else {
@@ -1592,6 +1625,12 @@ if ("serviceWorker" in navigator) {
         function saveData() {
             localStorage.setItem("completedMissions", completedMissions);
             localStorage.setItem("missionHistory", JSON.stringify(missionHistory));
+            // Save deducted flag on missions
+document.querySelectorAll("#mission-list li").forEach(li => {
+    if (li.dataset.deducted) {
+        li.setAttribute("data-deducted", "true");
+    }
+});
             localStorage.setItem("missions", document.getElementById("mission-list").innerHTML);
             localStorage.setItem("skills", document.getElementById("skill-list").innerHTML);
             localStorage.setItem("goals", document.getElementById("goal-list").innerHTML);
@@ -1603,7 +1642,40 @@ if ("serviceWorker" in navigator) {
             document.getElementById("skill-list").innerHTML =
                 localStorage.getItem("skills") || "";
             document.getElementById("goal-list").innerHTML =
-                localStorage.getItem("goals") || "";
+                localStorage.getItem("goals") || ""
+            // --- FIX MISSIONS AFTER LOADING ---
+document.querySelectorAll("#mission-list li").forEach(li => {
+
+    // 1. Ensure overdueMark exists
+    if (!li.querySelector(".overdueMark")) {
+        const span = document.createElement("span");
+        span.className = "overdueMark";
+        li.appendChild(span);
+    }
+
+    // 2. Ensure deadlineDisplay exists
+    if (!li.querySelector(".deadlineDisplay")) {
+        const dspan = document.createElement("span");
+        dspan.className = "deadlineDisplay";
+        li.appendChild(dspan);
+    }
+
+    // 3. Restore dataset.deadline
+    const savedDeadline = li.getAttribute("data-deadline");
+    if (savedDeadline) li.dataset.deadline = savedDeadline;
+
+    // 4. Restore deducted flag
+    const savedDeducted = li.getAttribute("data-deducted");
+    if (savedDeducted === "true") {
+        li.dataset.deducted = "true";
+    }
+
+    // 5. Reattach edit modal click
+    li.addEventListener("click", (e) => {
+        if (e.target.classList.contains("complete-btn")) return;
+        openModal("edit-mission", li);
+    });
+});
 
             document.querySelectorAll("#skill-list .skill").forEach(div => {
                 div.addEventListener("click", () => openModal("edit-skill", div));
@@ -1672,4 +1744,5 @@ if ("serviceWorker" in navigator) {
 </body>
 
 </html>
+
 
