@@ -4,8 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="js.png">
     <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3B82F6">
+<link rel="icon" type="image/png" href="icon.png">
+
 
     <title>Stand Out</title>
 
@@ -35,6 +37,56 @@
             font-size: 2.5rem;
             color: #3B82F6;
         }
+/* ===========================
+   TOP NAVBAR (Fully fixed + responsive)
+=========================== */
+.top-navbar {
+    width: 100%;
+    height: 60px;
+    background: #111827;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0 16px;
+
+    /* border-bottom: 2px solid #1f2937; */
+
+    /* Prevent wrapping */
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.nav-left {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #3B82F6;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; /* prevents shrinking/wrapping */
+}
+
+.nav-right .nav-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 2rem;
+}
+
+/* Prevent content going under navbar */
+section {
+    margin-top: 70px !important;
+}
 
 
         /* =========================================================
@@ -601,6 +653,15 @@
 </head>
 
 <body>
+<!-- ===========================
+       Top Navbar
+=========================== -->
+<nav class="top-navbar">
+    <div class="nav-left">Stand Out</div>
+    <div class="nav-right">
+        <img src="icon.jpeg" alt="Profile" class="nav-img">
+    </div>
+</nav>
 
     <!-- ===========================
        Bottom Navigation
@@ -685,9 +746,9 @@
   ============================ -->
     <section id="account" class="hidden">
         <h2>Documentation</h2>
-        <button onclick="requestNotificationPermission()">Enable Notifications</button>
-        <h5><a href="documentation.html">Stand Out Version 1.7</a></h5>
-        <h5>Date of Documentation: 18 Sep 2025</h5>
+
+        <h5><a href="documentation.html">Stand Out Version 1.8</a></h5>
+        <h5>Date of Documentation: 23 Dec 2025</h5>
 
         <h3>Achievements</h3>
         <div id="achievementsViewer" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
@@ -725,65 +786,14 @@
     <!-- ===========================
        JavaScript (Message 3)
   ============================ -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-messaging-compat.js"></script>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDUh518DMZJojohVb3zhnIcf2_QWe_R-ow",
-            authDomain: "notiq-d168b.firebaseapp.com",
-            projectId: "notiq-d168b",
-            storageBucket: "notiq-d168b.firebasestorage.app",
-            messagingSenderId: "706368072132",
-            appId: "1:706368072132:web:8d9c61d6c2c55c02a85c91",
-            measurementId: "G-WLZCZZ07B5"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-
-        const messaging = firebase.messaging();
-    </script>
-
-    <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("service-worker.js")
-                .then(() => console.log("Service Worker Registered"));
-        }
-        function requestNotificationPermission() {
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") {
-                    getFCMToken();
-                } else {
-                    alert("Notifications permission denied");
-                }
-            });
-        }
-        function getFCMToken() {
-            messaging.getToken({ vapidKey: "BINu6urN_rV72AJ83vrZ2FT3KL9CubJyZfocKV4rMXQd1_oOAlrfkyqhwQjzbl6zU0U3t6V8Js5PcWzfSI-zEM8" })
-                .then(token => {
-                    console.log("FCM Token:", token);
-                    alert("Notifications enabled!");
-                    // (Optional) Save token to your DB if you want server-triggered pushes
-                })
-                .catch(err => console.error("Token error:", err));
-        }
-        messaging.onMessage(payload => {
-            new Notification(payload.notification.title, {
-                body: payload.notification.body,
-                icon: payload.notification.icon
-            });
-        });
-
-
-        function showLocalNotification(title, body) {
-    navigator.serviceWorker.ready.then(reg => {
-        reg.showNotification(title, {
-            body: body,
-            icon: "js.png" // optional, use your app icon
-        });
-    });
+  <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js")
+    .then(() => console.log("Service Worker Registered"));
 }
+</script>
 
+    <script>
         /* =========================================================
        1. GLOBAL VARIABLES + STORED DATA
     ========================================================= */
@@ -791,8 +801,6 @@
         let missionHistory = JSON.parse(localStorage.getItem("missionHistory")) || {};
         window.addEventListener("load", () => {
             checkMissedDeadlines();
-            // requestNotificationPermission();
-
         });
 
 
@@ -1221,9 +1229,15 @@
             li.querySelector(".mission-text").textContent = newText;
 
             // Update deadline
-            li.dataset.deadline = newDeadline;
-            li.querySelector(".deadlineDisplay").textContent =
-                newDeadline ? ` (Due: ${new Date(newDeadline).toLocaleString()})` : "";
+            if (newDeadline) {
+                const d = new Date(newDeadline);
+                const dateString = d.toLocaleDateString([], { day: "numeric", month: "short" });
+                const timeString = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+                li.querySelector(".deadlineDisplay").textContent = `${dateString}, ${timeString}`;
+            } else {
+                li.querySelector(".deadlineDisplay").textContent = "";
+            }
 
             // REMOVE overdue badge when mission is updated
             li.querySelector(".overdueMark").innerHTML = "";
@@ -1258,9 +1272,6 @@
             if (!isOverdue) {
                 completedMissions++;
             }
-            if (completedMissions === 1) {
-    showLocalNotification("Congratulations!", "You completed your first mission!");
-}
 
             document.getElementById("missionCounter").textContent = completedMissions;
 
@@ -1655,49 +1666,9 @@
             }
         });
 
-         function notifyUpcomingDeadlines() {
-    const missions = JSON.parse(localStorage.getItem("missions") || "[]");
-    const now = new Date();
-
-    missions.forEach(mission => {
-        if (mission.dueDate && mission.status !== "completed") {
-            const due = new Date(mission.dueDate);
-            const diffMinutes = (due - now) / 60000;
-
-            if (diffMinutes > 29 && diffMinutes < 31) {
-                navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification("Upcoming Deadline", {
-                        body: `Your mission "${mission.title}" is due in 30 minutes!`,
-                        icon: "js.png"
-                    });
-                });
-            }
-        }
-    });
-}
-setInterval(notifyUpcomingDeadlines, 60000);
-
-function sendDailyReminder() {
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-
-    if (hours === 20 && minutes === 55) {
-        navigator.serviceWorker.ready.then(reg => {
-            reg.showNotification("Daily Reminder", {
-                body: "Don't forget your missions today!",
-                icon: "js.png"
-            });
-        });
-    }
-}
-setInterval(sendDailyReminder, 60000);
-
 
     </script>
 
 </body>
 
-
 </html>
-
