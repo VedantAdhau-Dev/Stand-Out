@@ -85,7 +85,12 @@ function getISTDate() {
 }
 
 function getTodayKey() {
-    return getISTDate().toISOString().slice(0, 10);
+    return new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Kolkata",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).format(new Date());
 }
 
 function enforceDailyReset() {
