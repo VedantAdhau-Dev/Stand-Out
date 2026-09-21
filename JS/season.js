@@ -54,13 +54,13 @@
             15: {
                 type: "card",
                 id: "season_02_card",
-                title: ""
+                title: "The Cursed Awakening"
             },
 
             20: {
                 type: "exclusive-card",
                 id: "season_02_exclusive_card",
-                title: ""
+                title: "Domain Expansion"
             }
 
         }
