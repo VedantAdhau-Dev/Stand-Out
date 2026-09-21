@@ -65,6 +65,8 @@ window.cardCatalog = [
 
    { id: "Endgame_Cap", title: "Captain America - Endgame", grade: "w", quote: "The Worthy Human.", cost: 200, image: "Images/Endgame_Cap.gif", limited: true, expiresAt: "2026-09-30T23:29:30Z" },
    { id: "Endgame_Thor", title: "Thor - Ragnarock", grade: "w", quote: "God Of Thunder.", cost: 210, image: "Images/Endgame_Thor.gif", limited: true, expiresAt: "2026-09-30T23:29:30Z" },
+   { id: "JJK_Sukuna", title: "Ryomen SUkuna", grade: "w", quote: "Fear the King of Curses.", cost: 200, image: "Images/JJK_Sukuna.gif", limited: true, expiresAt: "2026-10-31T23:29:30Z" },
+   { id: "JJK_Gojo", title: "Satoru Gojo", grade: "w", quote: "Throughout heaven and earth, I alone am the honored one.", cost: 210, image: "Images/JJK_Gojo.gif", limited: true, expiresAt: "2026-10-31T23:29:30Z" },
 
    {
       id: "season_01_card",
