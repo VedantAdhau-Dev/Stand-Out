@@ -90,5 +90,30 @@ window.cardCatalog = [
       expiresAt: "2026-09-30T23:29:30Z",
       season: "season-01",
       seasonReward: true
-   }
+   },
+   {
+    id: "season_02_card",
+    title: "The Cursed Awakening",
+    quote: "The curse awakens within.",
+    grade: "A",
+    cost: 0,
+    image: "assets/cards/season-02-cursed-awakening.png",
+    limited: true,
+    expiresAt: "2026-10-31T23:59:59+05:30",
+    season: "season-02",
+    seasonReward: true
+},
+
+{
+    id: "season_02_exclusive_card",
+    title: "Domain Expansion",
+    quote: "Within my domain, the battle is already decided.",
+    grade: "S",
+    cost: 0,
+    image: "assets/cards/season-02-domain-expansion.png",
+    limited: true,
+    expiresAt: "2026-10-31T23:59:59+05:30",
+    season: "season-02",
+    seasonReward: true
+}
 ];
